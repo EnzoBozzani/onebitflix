@@ -15,5 +15,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     sequelize.authenticate()
         .then(() => console.log('DB connection successfull'));
-    console.log(`Server started successfully at port ${PORT}`);
+    console.log(`Server started successfully. URL: [ http://localhost:3000/admin ]`);
 })
