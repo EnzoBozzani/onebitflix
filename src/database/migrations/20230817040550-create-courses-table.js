@@ -27,11 +27,7 @@ module.exports = {
       category_id: {
         allowNull: false,
         type: Sequelize.DataTypes.INTEGER,
-        //indica que é uma referência à tabela categories e a qual campo, que é o id
         references: { model: 'categories', key: 'id' },
-        //essas opções dizem o que deve acontecer com a tabela curso de acordo com o que aconteça na tabela 
-        //categorias. Ou seja, ao atualizar uma categoria, o curso é atualizado. E não é possível remover uma categoria associada
-        //a um curso
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
       },

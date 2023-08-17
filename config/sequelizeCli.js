@@ -4,7 +4,7 @@ module.exports = {
         host: 'localhost', 
         port: '5432', 
         database: 'onebitflix_development', 
-        username: process.env.USERNAME, 
+        username: process.env.USERNAME,
         password: process.env.PASSWORD
     }
 }

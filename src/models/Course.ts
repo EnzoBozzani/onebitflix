@@ -1,7 +1,6 @@
 import { sequelize } from '../database'
 import { DataTypes, Model, Optional } from 'sequelize'
 
-//são criadas interfaces similares ao model do Category, apenas para fortalecer a tipagem
 export interface Course {
   id: number
   name: string
@@ -11,7 +10,6 @@ export interface Course {
   categoryId: number
 }
 
-//aqui indicamos que nem o id, nem o thumbnailUrl e new o featured são obrigatórios na hora de criar um curso
 export interface CourseCreationAttributes extends Optional<Course, 'id' | 'thumbnailUrl' | 'featured' > {}
 
 export interface CourseInstance extends Model<Course, CourseCreationAttributes>, Course {}
