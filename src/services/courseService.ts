@@ -22,5 +22,14 @@ export const courseService = {
         });
         const randomFeaturedCourses = featuredCourses.sort(() => 0.5 - Math.random());
         return randomFeaturedCourses.slice(0, 3);
+    }, 
+
+    getTopTenNewest: async () => {
+        const newestCourses = await Course.findAll({
+            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']], 
+            limit: 10, 
+            order: [['created_at', 'DESC']]
+        })
+        return newestCourses;
     }
 }
