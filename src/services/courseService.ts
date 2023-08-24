@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { Course } from "../models";
 
 export const courseService = {
@@ -31,5 +32,33 @@ export const courseService = {
             order: [['created_at', 'DESC']]
         })
         return newestCourses;
+    }, 
+
+    findByName: async (name: string, page: number, perPage: number) => {
+        const offset = (page - 1) * perPage;
+
+        const { count, rows } = await Course.findAndCountAll({
+            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']], 
+            where: {
+                //utilizaremos o operador do SQL: like, que busca
+                //strings que se assemelhem ao resultado
+                name: {
+                    //usaremos ainda o operador iLike (só tem no Postgres)
+                    //fazendo com que ele não diferencie maiúsculas de 
+                    //minúsculas. A % antes e depois da palavra indica
+                    //que queremos achar name em qualquer lugar da string
+                    [Op.iLike]: `%${name}%`
+                }
+            }, 
+            //implementamos a páginação
+            limit: perPage, 
+            offset
+        })
+        return {
+            courses: rows, 
+            page, 
+            perPage, 
+            total: count
+        };
     }
 }
