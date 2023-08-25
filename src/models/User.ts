@@ -2,6 +2,7 @@ import { sequelize } from '../database'
 import { DataTypes, Model, Optional } from 'sequelize'
 import bcrypt from 'bcrypt';
 
+type checkPasswordCallback = (err?: Error, isSame?: boolean) => void;
 export interface User {
   id: number
   firstName: string
@@ -13,9 +14,12 @@ export interface User {
   role: 'admin' | 'user'
 }
 
-export interface UserCreationAttributes extends Optional<User, 'id'> {}
 
-export interface UserInstance extends Model<User, UserCreationAttributes>, User {}
+export interface UserCreationAttributes extends Optional<User, 'id'> { }
+
+export interface UserInstance extends Model<User, UserCreationAttributes>, User {
+  checkPassword: (password: string, callbackFn: checkPasswordCallback) => void;
+}
 
 export const User = sequelize.define<UserInstance, User>('User', {
   id: {
@@ -45,7 +49,7 @@ export const User = sequelize.define<UserInstance, User>('User', {
     unique: true,
     type: DataTypes.STRING,
     validate: {
-      isEmail: true 
+      isEmail: true
     }
   },
   password: {
@@ -56,16 +60,27 @@ export const User = sequelize.define<UserInstance, User>('User', {
     allowNull: false,
     type: DataTypes.STRING,
     validate: {
-        isIn: [['admin', 'user']]
+      isIn: [['admin', 'user']]
     }
   }
-}, 
-{
-  hooks: {
-    beforeSave: async (user) => {
-      if (user.isNewRecord || user.changed('password')){
-        user.password = await bcrypt.hash(user.password.toString(), 10);
+},
+  {
+    hooks: {
+      beforeSave: async (user) => {
+        if (user.isNewRecord || user.changed('password')) {
+          user.password = await bcrypt.hash(user.password.toString(), 10);
+        }
       }
     }
   }
-})
+)
+
+User.prototype.checkPassword = function (password: string, callbackFn: checkPasswordCallback){
+  bcrypt.compare(password, this.password, (err, isSame) => {
+    if (err){
+      callbackFn(err);
+    } else {
+      callbackFn(err, isSame);
+    }
+  })
+}
