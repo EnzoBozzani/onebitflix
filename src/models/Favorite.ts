@@ -8,10 +8,9 @@ export interface Favorite {
     courseId: number
 }
 
-//nesse caso, não precisamos de atributos de criação, pois não usamos id
 
 export interface FavoriteInstance extends Model<Favorite>, Favorite {
-    course?: CourseInstance, 
+    Course?: CourseInstance, 
     user?: UserInstance
 }
 

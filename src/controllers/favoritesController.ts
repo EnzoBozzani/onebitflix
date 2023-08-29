@@ -3,9 +3,19 @@ import { AuthenticatedRequest } from "../middlewares/auth";
 import { favoriteService } from "../services/favoriteService";
 
 export const favoritesController = {
+    index: async (req: AuthenticatedRequest, res: Response) => {
+        const userId = req.user!.id;
+        try {
+            const favorites = await favoriteService.findByUserId(Number(userId));
+            return res.json(favorites);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
+        }
+    },
+
     save: async (req: AuthenticatedRequest, res: Response) => {
-        //obtemos o id diretamente do token decodificado na requisição
-        //usamos o ! quando temos certeza que a propriedade sempre existirá
         const userId = req.user!.id;
         const { courseId } = req.body;
         try {   
@@ -17,5 +27,18 @@ export const favoritesController = {
             }
         }
 
+    }, 
+
+    delete: async (req: AuthenticatedRequest, res: Response) => {
+        const userId = req.user!.id;
+        const courseId = req.params.id;
+        try {
+            await favoriteService.delete(Number(userId), Number(courseId));
+            return res.status(204).send();
+        } catch(err){
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
+        }
     }
 }

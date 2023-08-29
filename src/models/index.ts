@@ -20,9 +20,9 @@ User.belongsToMany(Course, { through: Favorite })
 User.hasMany(Favorite, { as: 'favoritesCourses', foreignKey: 'user_id' })
 
 export {
-  Category,
-  Course,
-  Episode,
-	Favorite,
-  User
+    Category,
+    Course,
+    Episode,
+    Favorite,
+    User
 }
