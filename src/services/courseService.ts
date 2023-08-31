@@ -4,61 +4,80 @@ import { Course } from "../models";
 export const courseService = {
     findByIdWithEpisodes: async (id: string) => {
         const courseWithEpisodes = await Course.findByPk(id, {
-            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']], 
+            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']],
             include: {
-                association: 'episodes', 
+                association: 'episodes',
                 attributes: ['id', 'name', 'synopsis', 'order', ['video_url', 'videoUrl'], ['seconds_long', 'secondsLong']],
-                order: [['order', 'ASC']], 
+                order: [['order', 'ASC']],
                 separate: true
             }
         })
         return courseWithEpisodes;
-    }, 
+    },
     getRandomFeaturedCourses: async () => {
         const featuredCourses = await Course.findAll({
-            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']], 
+            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']],
             where: {
-                featured: true, 
+                featured: true,
             }
         });
         const randomFeaturedCourses = featuredCourses.sort(() => 0.5 - Math.random());
         return randomFeaturedCourses.slice(0, 3);
-    }, 
+    },
 
     getTopTenNewest: async () => {
         const newestCourses = await Course.findAll({
-            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']], 
-            limit: 10, 
+            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']],
+            limit: 10,
             order: [['created_at', 'DESC']]
         })
         return newestCourses;
-    }, 
+    },
 
     findByName: async (name: string, page: number, perPage: number) => {
         const offset = (page - 1) * perPage;
 
         const { count, rows } = await Course.findAndCountAll({
-            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']], 
+            attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']],
             where: {
-                //utilizaremos o operador do SQL: like, que busca
-                //strings que se assemelhem ao resultado
                 name: {
-                    //usaremos ainda o operador iLike (só tem no Postgres)
-                    //fazendo com que ele não diferencie maiúsculas de 
-                    //minúsculas. A % antes e depois da palavra indica
-                    //que queremos achar name em qualquer lugar da string
                     [Op.iLike]: `%${name}%`
                 }
-            }, 
-            //implementamos a páginação
-            limit: perPage, 
+            },
+            limit: perPage,
             offset
         })
         return {
-            courses: rows, 
-            page, 
-            perPage, 
+            courses: rows,
+            page,
+            perPage,
             total: count
         };
-    }
+    },
+
+    getTopTenByLikes: async () => {
+        const results = await Course.sequelize?.query(
+            `SELECT
+            courses.id,
+            courses.name,
+            courses.synopsis,
+            courses.thumbnail_url as thumbnailUrl,
+            COUNT(users.id) AS likes
+          FROM courses
+            LEFT OUTER JOIN likes
+              ON courses.id = likes.course_id
+              INNER JOIN users
+                ON users.id = likes.user_id
+          GROUP BY courses.id
+          ORDER BY likes DESC
+          LIMIT 10;`
+        )
+
+        if (results) {
+            const [topTen, metada] = results
+            return topTen
+        } else {
+            return null
+        }
+    },
 }
