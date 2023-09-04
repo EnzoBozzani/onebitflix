@@ -32,6 +32,21 @@ export const userService = {
         return user;
     },
 
+    update: async (id: number, attributes: {
+        firstName: string, 
+        lastName: string, 
+        phone: string, 
+        birth: Date, 
+        email: string
+    }) => {
+        //o returning é usado para retornar os dados alterados. (só tem no pg)
+        //é retornada uma tupla com o número de linhas afetadas
+        //e uma array com os registros afetados
+        const [ numberOfAffectedRows, updatedUser ] = await User.update(attributes, { where: { id }, returning: true });
+
+        return updatedUser[0];
+    },
+
     getKeepWatchingList: async (userId: number) => {
         const userWithWatchingEpisodes = await User.findByPk(userId, {
             include: {
@@ -72,5 +87,5 @@ export const userService = {
 
         return keepWatchingList;
 
-    }
+    }, 
 }
