@@ -39,9 +39,6 @@ export const userService = {
         birth: Date, 
         email: string
     }) => {
-        //o returning é usado para retornar os dados alterados. (só tem no pg)
-        //é retornada uma tupla com o número de linhas afetadas
-        //e uma array com os registros afetados
         const [ numberOfAffectedRows, updatedUser ] = await User.update(attributes, { where: { id }, returning: true });
 
         return updatedUser[0];
@@ -88,4 +85,14 @@ export const userService = {
         return keepWatchingList;
 
     }, 
+
+    updatePassword: async (id: number, password: string) => {
+        const [ numberOfAffectedRows, updatedUser ] = await User.update({ password }, { 
+            where: { id }, 
+            returning: true, 
+            individualHooks: true
+        });
+
+        return updatedUser[0];
+    }   
 }
