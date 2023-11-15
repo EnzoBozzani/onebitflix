@@ -38,3 +38,7 @@ notes.txt
 uploads/*
 
 public/thumbnails
+
+.adminjs
+
+dist/

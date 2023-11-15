@@ -13,14 +13,15 @@ export const episodeResourceOptions: ResourceOptions = {
 export const episodeResourceFeatures: FeatureType[] = [
     uploadFileFeature({
         provider: {
-            local : {
-                bucket: path.join(__dirname, '..', '..', '..', 'uploads')
+            local: {
+                bucket: path.join(__dirname, '..', '..', '..', 'uploads'),
+                opts: {}
             }
-        }, 
+        },
         properties: {
-            key: 'videoUrl', 
-            file: 'uploadVideo', 
-        }, 
+            key: 'videoUrl',
+            file: 'uploadVideo',
+        },
         uploadPath: (record, filename) => `videos/course-${record.get('courseId')}/${filename}`
     })
 ]

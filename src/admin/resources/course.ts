@@ -15,14 +15,15 @@ export const courseResourceFeatures: FeatureType[] = [
         provider: {
             local: {
                 //nesse caso não tem porque proteger as capas, podemos deixar no public
-                bucket: path.join(__dirname, '..', '..', '..', 'public')
+                bucket: path.join(__dirname, '..', '..', '..', 'public'),
+                opts: {}
             }
-        }, 
+        },
         properties: {
             //chave no banco de dados 
             key: 'thumbnailUrl',
             file: 'uploadThumbnail'
-        }, 
+        },
         uploadPath: (record, filename) => `thumbnails/course-${record.get('id')}/${filename}`
     })
 ]
